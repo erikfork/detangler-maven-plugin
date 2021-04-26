@@ -1,4 +1,4 @@
-# detangler-maven-plugin
+# detangler-gradle-plugin
 Simple plugin to generate [detangler](https://github.com/SeanShubin/detangler) reports with gradle.
 
 Usage:
