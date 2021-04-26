@@ -26,6 +26,10 @@ class DetanglerPlugin implements Plugin<Project> {
             File argsFile
 
             doFirst {
+                boolean debug = Boolean.getBoolean("detangler.debug")
+                if (debug) {
+                    println "generating detangler report"
+                }
                 def startsWith = spec.basePackages.collect {"[" + it.replace('.', ' ') + "]"}.join(" ")
 
                 allowedFile = File.createTempFile("detangler-allowed-in-cycle", ".txt")
@@ -36,13 +40,12 @@ class DetanglerPlugin implements Plugin<Project> {
                     classesDir += " " + project.sourceSets.test.output.classesDirs.join(" ")
                 }
 
-                argsFile = File.createTempFile("detangler", ".txt")
-                argsFile.write(String.join(
+                String config = String.join(
                         "\n",
                         "{",
                         "  reportDir build/report/detangler",
                         "  searchPaths [ " + classesDir + " ]",
-                        "  level 2",
+                        "  level " + spec.level,
                         "  startsWith {",
                         "    include [" + startsWith + "]",
                         "    drop [" + startsWith + "]",
@@ -56,9 +59,16 @@ class DetanglerPlugin implements Plugin<Project> {
                         "  allowedInCycle " + allowedFile.getAbsolutePath(),
                         "  pathsRelativeToCurrentDirectory true",
                         "  pathsRelativeToConfigurationDirectory false",
-                        "}"))
+                        "}")
 
+                argsFile = File.createTempFile("detangler", ".txt")
+                argsFile.write(config)
                 args(argsFile.path)
+
+                if (debug) {
+                    println "detangler config is:"
+                    println config
+                }
             }
 
             doLast {

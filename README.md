@@ -20,11 +20,17 @@ In `build.gradle` add the plugin coordinates:
     }
 
 Also add the parameters. The `basePackages` parameter is a list of prefixes to the classes 
-you want to include in the report:
+you want to include in the report. The rest of the parameters are optional:
 
     detangler.basePackages=["com.myorg"]
     detangler.allowedInCycle=[ ]
+    detangler.includeTests=true
+    detangler.level=2
 
 Now you should be able to generate a report using:
 
     gradle detangler
+
+To see the effective configuration, set the `detangler.debug` system property:
+
+    gradle -Ddetangler.debug=true detangler
