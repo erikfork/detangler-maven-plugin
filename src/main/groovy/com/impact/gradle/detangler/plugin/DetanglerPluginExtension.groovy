@@ -4,6 +4,7 @@ class DetanglerPluginExtension {
 
     def basePackages
     def allowedInCycle
+    def includeTests = true;
 
 }
 

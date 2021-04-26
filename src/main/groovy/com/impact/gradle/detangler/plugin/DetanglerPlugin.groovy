@@ -32,14 +32,16 @@ class DetanglerPlugin implements Plugin<Project> {
                 allowedFile.write(spec.allowedInCycle.collect {"[" + it.replace('.', ' ') + "]"}.join(" "))
 
                 String classesDir = project.sourceSets.main.output.classesDirs.join(" ")
-                String testClassesDir = project.sourceSets.test.output.classesDirs.join(" ")
+                if (spec.includeTests) {
+                    classesDir += " " + project.sourceSets.test.output.classesDirs.join(" ")
+                }
 
                 argsFile = File.createTempFile("detangler", ".txt")
                 argsFile.write(String.join(
                         "\n",
                         "{",
                         "  reportDir build/report/detangler",
-                        "  searchPaths [ " + classesDir + " " + testClassesDir + " ]",
+                        "  searchPaths [ " + classesDir + " ]",
                         "  level 2",
                         "  startsWith {",
                         "    include [" + startsWith + "]",
