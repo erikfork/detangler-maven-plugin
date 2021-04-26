@@ -1,0 +1,30 @@
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+group = 'com.impact.gradle'
+version = '1.0-SNAPSHOT'
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = 'com.impact.gradle.detangler'
+            implementationClass = 'com.impact.gradle.detangler.plugin.DetanglerPlugin'
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url="https://ir-nexus.impactradius.net/repository/snapshots/"
+            credentials {
+                username property("nexusUsername")
+                password property("nexusPassword")
+            }
+        }
+    }
+}
+
