@@ -35,9 +35,14 @@ class DetanglerPlugin implements Plugin<Project> {
                 allowedFile = File.createTempFile("detangler-allowed-in-cycle", ".txt")
                 allowedFile.write(spec.allowedInCycle.collect {"[" + it.replace('.', ' ') + "]"}.join(" "))
 
-                String classesDir = project.sourceSets.main.output.classesDirs.join(" ")
+                if (debug) {
+                    project.sourceSets.main.output.classesDirs.each { println it.getPath() + " has " + (it.isDirectory() ? it.list().length : 0) + " files" }
+                    project.sourceSets.test.output.classesDirs.each { println it.getPath() + " has " + (it.isDirectory() ? it.list().length : 0) + " files" }
+                }
+
+                String classesDir = project.sourceSets.main.output.classesDirs.findAll { it.isDirectory() && it.list().length > 0 }.join(" ")
                 if (spec.includeTests) {
-                    classesDir += " " + project.sourceSets.test.output.classesDirs.join(" ")
+                    classesDir += " " + project.sourceSets.test.output.classesDirs.findAll { it.isDirectory() && it.list().length > 0 }.join(" ")
                 }
 
                 String config = String.join(
