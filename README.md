@@ -44,3 +44,23 @@ Now you should be able to generate a report using:
 To see the effective configuration, set the `detangler.debug` system property:
 
     gradle -Ddetangler.debug=true detangler
+
+### Kotlin
+
+When using the Kotlin DSL, an example `settings.gradle.kts` could looks like:
+
+    pluginManagement {
+        repositories {
+            gradlePluginPortal()
+            maven("https://ir-nexus.impactradius.net/repository/snapshots")
+        }
+    }
+
+and an example `build.gradle.kts` could look like:
+
+    plugins {
+        id("com.impact.gradle.detangler") version "1.0-SNAPSHOT"
+    }
+
+    detangler.basePackages=listOf("estalea","impact","com.impact")
+
