@@ -22,7 +22,7 @@ class DetanglerPlugin implements Plugin<Project> {
             dependsOn 'compileJava'
             dependsOn 'compileTestJava'
 
-            File allowedFile
+            File allowedFile = null
             File argsFile
 
             doFirst {
@@ -30,10 +30,16 @@ class DetanglerPlugin implements Plugin<Project> {
                 if (debug) {
                     println "generating detangler report"
                 }
-                def startsWith = spec.basePackages.collect {"[" + it.replace('.', ' ') + "]"}.join(" ")
+                def startsWith = spec.basePackages.collect { "[" + it.replace('.', ' ') + "]" }.join(" ")
 
-                allowedFile = File.createTempFile("detangler-allowed-in-cycle", ".txt")
-                allowedFile.write(spec.allowedInCycle.collect {"[" + it.replace('.', ' ') + "]"}.join(" "))
+                String allowedFilePath
+                if (spec.allowedInCycle.size() == 1 && new File(spec.allowedInCycle.get(0)).canRead()) {
+                    allowedFilePath = spec.allowedInCycle.get(0)
+                } else {
+                    allowedFile = File.createTempFile("detangler-allowed-in-cycle", ".txt")
+                    allowedFile.write(spec.allowedInCycle.collect { "[" + it.replace('.', ' ') + "]" }.join(" "))
+                    allowedFilePath = allowedFile.getAbsolutePath()
+                }
 
                 if (debug) {
                     project.sourceSets.main.output.classesDirs.each { println it.getPath() + " has " + (it.isDirectory() ? it.list().length : 0) + " files" }
@@ -61,7 +67,7 @@ class DetanglerPlugin implements Plugin<Project> {
                         "  ignoreJavadoc true",
                         "  logTiming false",
                         "  logEffectiveConfiguration false",
-                        "  allowedInCycle " + allowedFile.getAbsolutePath(),
+                        "  allowedInCycle " + allowedFilePath,
                         "  pathsRelativeToCurrentDirectory true",
                         "  pathsRelativeToConfigurationDirectory false",
                         "}")
@@ -77,7 +83,9 @@ class DetanglerPlugin implements Plugin<Project> {
             }
 
             doLast {
-                allowedFile.delete()
+                if (allowedFile != null) {
+                    allowedFile.delete()
+                }
                 argsFile.delete()
             }
         }
