@@ -17,7 +17,7 @@ class DetanglerPlugin implements Plugin<Project> {
         DetanglerPluginExtension spec = project.extensions.create('detangler', DetanglerPluginExtension)
 
         project.tasks.create("detangler", JavaExec) {
-            main 'com.seanshubin.detangler.console.ConsoleApplication'
+            mainClass 'com.seanshubin.detangler.console.ConsoleApplication'
             classpath project.configurations.detanglerConfig
             dependsOn 'compileJava'
             dependsOn 'compileTestJava'
